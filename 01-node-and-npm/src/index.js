@@ -1,5 +1,3 @@
-const tree = require('../fixtures.json')
-
 function drawTree(tree, index = 1, items = null, level = 1) {
     let indent = ' '
     let prefix = ''
@@ -24,4 +22,4 @@ function drawTree(tree, index = 1, items = null, level = 1) {
     }
 }
 
-drawTree(tree)
+module.exports = drawTree
