@@ -14,12 +14,27 @@
 
 <body>
     <div class="">
-        <h1>This is a Heading</h1>
+        <h1>Set your location</h1>
+        <div>
+            <input id="lat" />
+            <input id="long" />
+            <button id="find-me">Show my location</button>
+            <button id="save-location">Save location</button>
+            <br />
+            <p id="status"></p>
+        </div>
+        <br />
         <div id="map"></div>
     </div>
 </body>
+<script src="/socket.io/socket.io.js"></script>
 <script>
+    const socket = io()
+    const status = document.querySelector('#status')
+    const latInput = document.querySelector('#lat')
+    const longInput = document.querySelector('#long')
     const map = L.map('map').setView([51.505, -0.09], 13)
+
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
@@ -27,7 +42,52 @@
         tileSize: 512,
         zoomOffset: -1,
         accessToken: 'pk.eyJ1IjoiZG1pdHJ5YnIiLCJhIjoiY2wyM2M3OWd0MDZ5ajNrcnI3cnZ5Mmx3dyJ9.e0Qnjt8qT1EpUb4fHJ6n0w'
-    }).addTo(map);
+    }).addTo(map)
+
+    const polygon = L.polygon([
+        [51.509, -0.08],
+        [51.503, -0.06],
+        [51.51, -0.047]
+    ]).addTo(map)
+
+    function geoFindMe() {
+
+        function success(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            console.log('latitude', latitude, 'longitude', longitude)
+            status.textContent = '';
+            latInput.value = latitude;
+            longInput.value = longitude;
+        }
+
+        function error() {
+            status.textContent = 'Unable to retrieve your location'
+        }
+
+        if (!navigator.geolocation) {
+            status.textContent = 'Geolocation is not supported by your browser'
+        } else {
+            status.textContent = 'Locating…'
+            navigator.geolocation.getCurrentPosition(success, error)
+        }
+
+    }
+
+    function saveLocation() {
+        if (latInput.value && longInput.value) {
+            console.log('Test')
+            socket.emit('user location', {
+                latitude: latInput.value,
+                longitude: longInput.value
+            })
+            latInput.value = ''
+            longInput.value = ''
+        }
+    }
+
+    document.querySelector('#find-me').addEventListener('click', geoFindMe)
+    document.querySelector('#save-location').addEventListener('click', saveLocation)
 </script>
 
 </html>
