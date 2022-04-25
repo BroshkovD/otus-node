@@ -1,21 +1,37 @@
 // TODO
 // Add Pin on Maps and centering in the new locations
 // Draw a L.polygon from array from file
-// Enable Push API - https://developer.mozilla.org/en-US/docs/Web/API/Push_API
-// Setup websocket and input filed from index html
-// After adding new location to JSON file send push notification
 
-
+require('dotenv').config()
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
 const { Server } = require('socket.io')
+const webPush = require('web-push')
 
 const app = express()
 const server = app.listen(3000, () => console.log('Hello from 3000'))
 
 const io = new Server(server)
 const locationStoragePath = './assets/locations.json'
+
+
+if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+    console.log("You must set the VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY " +
+        "environment variables. You can use the following ones:")
+    console.log(webPush.generateVAPIDKeys())
+} else {
+    webPush.setVapidDetails(
+        'https://serviceworke.rs/',
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    )
+}
+
+app.get('/' + 'vapidPublicKey', function(req, res) {
+    res.send(process.env.VAPID_PUBLIC_KEY);
+})
+
 
 const writeToFile = (content) => {
     try {
@@ -26,9 +42,17 @@ const writeToFile = (content) => {
 }
 
 io.on('connection', (socket) => {
-    socket.on('user location', (location) => {
-        console.log('location: ', location)
-        writeToFile(location)
+    socket.on('user location', ({ latitude, longitude, subscription }) => {
+        webPush.sendNotification(subscription)
+            .then(function() {
+                res.sendStatus(201);
+            })
+            .catch(function(error) {
+                console.log(error);
+                res.sendStatus(500);
+            });
+
+        writeToFile({ latitude, longitude })
 
     })
 
