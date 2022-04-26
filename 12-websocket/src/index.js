@@ -1,7 +1,3 @@
-// TODO
-// Add Pin on Maps and centering in the new locations
-// Draw a L.polygon from array from file
-
 require('dotenv').config()
 const express = require('express')
 const fs = require('fs')

@@ -1,4 +1,4 @@
-navigator.serviceWorker.register('./service-worker.js')
+navigator.serviceWorker.register('../service-worker.js')
 const socket = io()
 const status = document.querySelector('#status')
 const latInput = document.querySelector('#lat')
@@ -25,10 +25,12 @@ function geoFindMe() {
     function success(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        console.log('latitude', latitude, 'longitude', longitude)
-        status.textContent = '';
-        latInput.value = latitude;
-        longInput.value = longitude;
+
+        status.textContent = ''
+        latInput.value = latitude
+        longInput.value = longitude
+        map.flyTo(new L.LatLng(latitude, longitude), 8)
+        L.marker([latitude, longitude]).addTo(map)
     }
 
     function error() {
@@ -70,6 +72,10 @@ navigator.serviceWorker.ready
                     longitude: longInput.value,
                     subscription
                 })
+
+                map.flyTo(new L.LatLng(latInput.value, longInput.value), 8)
+                L.marker([latInput.value, longInput.value]).addTo(map)
+
                 latInput.value = ''
                 longInput.value = ''
             }
