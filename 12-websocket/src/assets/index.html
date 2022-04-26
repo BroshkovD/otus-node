@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Title</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+<style>
+    #map {
+        height: 90vh;
+    }
+</style>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+<body>
+    <div class="">
+        <h1>Set your location</h1>
+        <div>
+            <input id="lat" />
+            <input id="long" />
+            <button id="find-me">Show my location</button>
+            <button id="save-location">Save location</button>
+            <br />
+            <p id="status"></p>
+        </div>
+        <br />
+        <div id="map"></div>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="./index.js"></script>
+
+</html>
